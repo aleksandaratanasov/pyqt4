@@ -4,7 +4,11 @@
 # Author: Aleksandar Vladimirov Atanasov
 # Description: Launches and terminates a detached process using a toggable push button
 
-class QProcessControl(QtGui.QWidget):
+import sys, subprocess, os
+from PyQt4.QtGui import QApplication, QWidget, QPushButton, QHBoxLayout
+from PyQt4.QtCore import QProcess
+
+class QProcessControl(QWidget):
 
     
     def __init__(self):
@@ -21,16 +25,16 @@ class QProcessControl(QtGui.QWidget):
 			print 'PID: ', self.pid
 			self.status = True
 	else:
-		print 'Warning: No \"qpc.pid\" detected. If you have started the detached process, closed the UI and deleted this file, the application will be unable to restore its state!'
+		print 'Warning: No \"qpc.pid\" detected. If you have started the detached process, closed the UI and deleted this file, the application will be unable to restore its state and the external process will be orphaned!'
 
 	self.args = ['']
         self.initUI()
         
     def initUI(self):
         
-	self.hbox = QtGui.QHBoxLayout()
+	self.hbox = QHBoxLayout()
 
-	self.qbtn = QtGui.QPushButton('Start', self)
+	self.qbtn = QPushButton('Start', self)
 	self.qbtn.setCheckable(True)
 	if self.status:
 		self.qbtn.setChecked(True)
@@ -73,7 +77,7 @@ class QProcessControl(QtGui.QWidget):
 				self.qbtn.setChecked(True)
 
 def main(): 
-    app = QtGui.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     ex = QProcessControl()
     sys.exit(app.exec_())
 
