@@ -25,7 +25,7 @@ class QProcessControl(QWidget):
 			print 'PID: ', self.pid
 			self.status = True
 	else:
-		print 'Warning: No \"qpc.pid\" detected. If you have started the detached process, closed the UI and deleted this file, the application will be unable to restore its state and the external process will be orphaned!'
+		print 'Warning: No \"qpc.pid\" detected. If you have started the detached process, closed the UI and deleted this file, the application will be unable to restore its state and the external process will have to be stopped manually'
 
 	self.args = ['']
         self.initUI()
@@ -65,7 +65,13 @@ class QProcessControl(QWidget):
 		print 'Stopping process'
 		if self.status:
 			# kill takes a very short amount of time hence we can call it from inside the main thread without freezing the UI
-			success = subprocess.call(['kill', '-SIGINT', str(self.pid)])
+			success = 1
+			try:
+				success = subprocess.call(['kill', '-SIGINT', str(self.pid)])
+			except OSError as e:
+				if e.errno == 3:
+					print 'Error: Process with selected PID not found'
+
 			if success == 0:
 				print 'Process stopped!'
 				self.status = False
@@ -73,7 +79,7 @@ class QProcessControl(QWidget):
 				os.remove(self.pidFilePath)
 				self.qbtn.setText('Start')
 			else:
-				print 'Error: Failed to stop process!'
+				print 'Error: Failed to stop process! It might have been stopped outside this application'
 				self.qbtn.setChecked(True)
 
 def main(): 
