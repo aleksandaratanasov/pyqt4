@@ -51,7 +51,9 @@ class QProcessControl(QWidget):
     def toggleProcess(self, val):
 	if val:
 		print 'Starting process'
-		self.status, self.pid = QProcess.startDetached(self.command, self.args, '.')
+		# Note: when roslaunch is terminated all processes spawned by it are also terminated
+		# thus even if roscore has been started by the roslaunch process it will too be stopped :)
+		self.status, self.pid = QProcess.startDetached('roslaunch', ['lt', 'talker.launch'], '.') #(self.command, self.args, '.')
 		if self.status:
 			print 'PID: ', self.pid
 			pidFile = open(self.pidFilePath, 'w')
@@ -65,7 +67,12 @@ class QProcessControl(QWidget):
 		print 'Stopping process'
 		if self.status:
 			# kill takes a very short amount of time hence we can call it from inside the main thread without freezing the UI
-			success = subprocess.call(['kill', '-SIGINT', str(self.pid)])
+			success = subprocess.call(['rosnode', 'kill', 'talker'])
+			# NOTE: using scripts (rosrun pkg_name script.py) and not launching ROS-confrom nodes creates
+			# nodes like "talker_121314_12121414", which are impossible to distinguish without too much
+			# fuss and make it really difficult to use 'rosnode kill' hence the requirement to start only
+			# nodes that have a simple, distinguishable name so that rosnode kill can be used or use roslaunch
+			# and launch files to give proper names
 			if success == 0:
 				print 'Process stopped!'
 				self.status = False

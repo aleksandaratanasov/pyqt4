@@ -3,5 +3,5 @@
 import time
 
 while True:
-	time.sleep(5)
-	print "Doing something infinitely"
+	time.sleep(1)
+	print "task"
