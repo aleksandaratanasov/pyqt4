@@ -133,7 +133,9 @@ class QProcessControl(QWidget):
 					self.success = os.kill(self.pid, SIGINT)
 				else:
 					print 'Error: No process with PID ' + str(self.pid) + ' detected'
-					self.qbtn.setChecked(True)
+				        if os.path.isfile(self.pidFilePath):
+						os.remove(self.pidFilePath)
+#					self.qbtn.setChecked(True)
 			# NOTE: using scripts (rosrun pkg_name script.py) and not launching ROS-confrom nodes creates
 			# nodes like "talker_121314_12121414", which are impossible to distinguish without too much
 			# fuss and make it really difficult to use 'rosnode kill' hence the requirement to start only
@@ -145,7 +147,8 @@ class QProcessControl(QWidget):
 				print 'Process stopped!'
 				self.status = False
 				self.pid = 0
-				os.remove(self.pidFilePath)
+                                if os.path.isfile(self.pidFilePath):
+                                  os.remove(self.pidFilePath)
 				self.qbtn.setText('Start')
 			else:
 				print 'Error: Failed to stop process!'
