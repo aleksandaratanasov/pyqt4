@@ -11,17 +11,6 @@ from PyQt4 import QtGui
 from PyQt4.QtGui import QSizePolicy
 from grid_generator import get_dim
 
-"""
-ZetCode PyQt4 tutorial 
-
-In this example, we create a skeleton
-of a calculator using a QtGui.QGridLayout.
-
-author: Jan Bodnar
-website: zetcode.com 
-last edited: July 2014
-"""
-
 class Example(QtGui.QWidget):
     
     def __init__(self):
@@ -56,13 +45,16 @@ class Example(QtGui.QWidget):
         for (name, position) in zip(names, positions):
             if nameIdx < len(names):
                 button = QtGui.QPushButton(name)
+		def button_clicked():
+		    print 'Button pressed'
+		button.clicked.connect(button_clicked)
                 button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
                 grid.addWidget(button, position[0], position[1])
             else:
                 pass
             nameIdx = nameIdx + 1
             
-        self.move(300, 400)
+        #self.move(300, 400)
         self.setWindowTitle('Square grid of buttons')
         self.show()
         
